@@ -31,6 +31,8 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
@@ -105,5 +107,22 @@ public class SalesforceWideRecordReaderTest {
 
     verify(reader, times(4)).fetchBatchRecords();
     assertEquals(3, readRecords.size());
+  }
+
+  @Test
+  public void testWideRecordReader_withNoRecords() throws Exception {
+    Schema schema = Schema.recordOf("test", Schema.Field.of("Id", Schema.of(Schema.Type.STRING)));
+    SoapRecordToMapTransformer transformer = mock(SoapRecordToMapTransformer.class);
+    SalesforceWideRecordReader reader = spy(new SalesforceWideRecordReader(
+            schema, "SELECT Id FROM Account", transformer));
+
+    FieldSetter.setField(reader, SalesforceWideRecordReader.class.getDeclaredField("results"), new ArrayList<>());
+    FieldSetter.setField(reader, SalesforceWideRecordReader.class.getDeclaredField("batchIterator"),
+            Collections.<List<Map<String, ?>>>emptyIterator());
+
+    assertEquals(0.0f, reader.getProgress(), 0.0001);
+    assertFalse(reader.nextKeyValue());
+    assertNull(reader.getCurrentValue());
+    verify(reader, times(0)).fetchBatchRecords();
   }
 }
