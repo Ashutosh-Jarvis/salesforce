@@ -106,8 +106,11 @@ public class SalesforceWideRecordReader extends SalesforceBulkRecordReader {
 
     batchIterator = partitions.iterator();
 
-    // initialize the 1st batch
-    results = fetchBatchRecords();
+    if (batchIterator.hasNext()) {
+      results = fetchBatchRecords();
+    } else {
+      results = new ArrayList<>();
+    }
 
     return this;
   }
