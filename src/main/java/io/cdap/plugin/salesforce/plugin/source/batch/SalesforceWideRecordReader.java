@@ -31,12 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * RecordReader implementation for wide SOQL queries. Reads a single Salesforce batch of SObject Id's from bulk job
@@ -109,7 +104,7 @@ public class SalesforceWideRecordReader extends SalesforceBulkRecordReader {
     if (batchIterator.hasNext()) {
       results = fetchBatchRecords();
     } else {
-      results = new ArrayList<>();
+      results = Collections.emptyList();
     }
 
     return this;
